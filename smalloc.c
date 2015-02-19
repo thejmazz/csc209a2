@@ -6,9 +6,17 @@
 #include "smalloc.h"
 
 
-
+/* the starting address of the memory region that is reserved by mem_init */
 void *mem;
+/* A linked list of struct blocks that identify the portions of the memory 
+ * region that are free (not in use). Blocks in this list are stored in 
+ * increasing address order.
+ */
 struct block *freelist;
+/* A linked list of struct blocks that identify portions of memory that have 
+ * been reserved by calls to smalloc. When a block is allocated it is placed 
+ * at the front of this list, so the list is unordered.
+ */
 struct block *allocated_list;
 
 
