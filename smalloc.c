@@ -49,13 +49,19 @@ int sfree(void *addr) {
  * - 0: only used if the address space is associated with a file.
  */
 void mem_init(int size) {
+	// assign mem a pointer to the start of allocated memory
     mem = mmap(NULL, size,  PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
     if(mem == MAP_FAILED) {
          perror("mmap");
          exit(1);
     }
 
-    /* NOTE: this function is incomplete */
+    // initialize freelist:
+    // create a block node with the starting address as given by mmap
+    freelist = malloc(sizeof(struct block));
+
+    // initialize an empty allocated_list
+    allocated_list = malloc(sizeof(struct block));
         
 }
 
