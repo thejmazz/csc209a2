@@ -115,7 +115,7 @@ void mem_init(int size) {
     // null by default?
     freelist->next = NULL;
 
-
+    /*
     // initialize an empty allocated_list
     allocated_list = malloc(sizeof(struct block));
     // first free block will start at mem
@@ -126,6 +126,7 @@ void mem_init(int size) {
     // single-node linked-list, set next to NULL
     //null by default?
     allocated_list->next = NULL;
+    */
 }
 
 void mem_clean(){
