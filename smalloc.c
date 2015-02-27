@@ -23,7 +23,55 @@ struct block *allocated_list;
 
 
 void *smalloc(unsigned int nbytes) {
-    return NULL;
+    // set current block to head of freelist
+    struct block *curr = freelist;
+    // initialize a previous block as well
+    struct block *prev = curr;
+
+    // search freelist for a block with block.size >= nbytes
+    while (curr->size < nbytes) {
+      prev = curr;
+      curr = curr->next
+    }
+
+    // exit if no block with enough space was found
+    if (curr == NULL) {
+      return 1;
+    }
+
+    // initialize temp block
+    struct block *temp = malloc(sizeof(struct block));
+
+    if (curr->size == nbytes) {
+      // no need to split block from freelist
+      temp->addr = curr;
+      temp->size = nbytes;
+      temp->next = allocated_list;
+
+      // append temp to head of allocated_list
+      allocated_list = temp;
+
+      // fix references in freelist
+      prev->next = curr->next
+
+    } else if (curr->size > nbytes) {
+      // split block from freelist
+      temp->addr = curr;
+      temp->size = nbytes;
+      temp->next = allocated_list;
+
+      // append temp to head of allocated_list
+      allocated_list = temp;
+
+      // initialize block for second half of split
+      struct block *b = malloc(sizeof(struct block));
+      b->addr = curr + nbytes;
+      b->size = curr->size - nbytes;
+      b->next = curr->next;
+
+      // fix references in freelist
+      prev->next = b;
+    }
 }
 
 
@@ -64,6 +112,7 @@ void mem_init(int size) {
     // size as given by param size
     freelist->size = size;
     // single-node linked-list, set next to NULL
+    // null by default?
     freelist->next = NULL;
 
 
@@ -72,8 +121,10 @@ void mem_init(int size) {
     // first free block will start at mem
     allocated_list->addr = mem;
     // size 0 since empty
+    // zero by default?
     allocated_list->size = 0;
     // single-node linked-list, set next to NULL
+    //null by default?
     allocated_list->next = NULL;
 }
 
