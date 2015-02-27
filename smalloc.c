@@ -35,7 +35,7 @@ void *smalloc(unsigned int nbytes) {
     }
 
     // exit if no block with enough space was found
-    // or trying to alloc 0 bytes
+    // or trying to smalloc 0 bytes
     if (curr == NULL || nbytes == 0) {
       return NULL;
     }
@@ -62,29 +62,10 @@ void *smalloc(unsigned int nbytes) {
 
       // append temp to head of allocated_list
       allocated_list = temp;
-      printf("%d", allocated_list->size);
 
-      /*
-      // initialize block for second half of split
-      struct block *b = malloc(sizeof(struct block));
-      b->addr = curr + nbytes;
-      b->size = curr->size - nbytes;
-      b->next = curr->next;
-      */
-
+      // change address and size of current node in freelist
       curr->addr = curr->addr + nbytes;
       curr->size = curr->size - nbytes;
-
-
-      //prev = curr;
-      //curr = curr->next;
-
-      /*
-      // fix references in freelist
-      if (curr->next != NULL) {
-        prev->next = curr;
-      }
-      */
     }
     return allocated_list->addr;
 }
