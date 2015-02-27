@@ -56,6 +56,7 @@ void mem_init(int size) {
          exit(1);
     }
 
+
     // initialize freelist
     freelist = malloc(sizeof(struct block));
     // starting address as given by mmap
@@ -68,7 +69,12 @@ void mem_init(int size) {
 
     // initialize an empty allocated_list
     allocated_list = malloc(sizeof(struct block));
-
+    // first free block will start at mem
+    allocated_list->addr = mem;
+    // size 0 since empty
+    allocated_list->size = 0;
+    // single-node linked-list, set next to NULL
+    allocated_list->next = NULL;
 }
 
 void mem_clean(){
