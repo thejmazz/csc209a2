@@ -31,12 +31,13 @@ void *smalloc(unsigned int nbytes) {
     // search freelist for a block with block.size >= nbytes
     while (curr->size < nbytes) {
       prev = curr;
-      curr = curr->next
+      curr = curr->next;
     }
 
     // exit if no block with enough space was found
-    if (curr == NULL) {
-      return 1;
+    // or trying to alloc 0 bytes
+    if (curr == NULL || nbytes == 0) {
+      return NULL;
     }
 
     // initialize temp block
@@ -52,26 +53,40 @@ void *smalloc(unsigned int nbytes) {
       allocated_list = temp;
 
       // fix references in freelist
-      prev->next = curr->next
-
+      prev->next = curr->next;
     } else if (curr->size > nbytes) {
       // split block from freelist
-      temp->addr = curr;
+      temp->addr = curr->addr;
       temp->size = nbytes;
       temp->next = allocated_list;
 
       // append temp to head of allocated_list
       allocated_list = temp;
+      printf("%d", allocated_list->size);
 
+      /*
       // initialize block for second half of split
       struct block *b = malloc(sizeof(struct block));
       b->addr = curr + nbytes;
       b->size = curr->size - nbytes;
       b->next = curr->next;
+      */
 
+      curr->addr = curr->addr + nbytes;
+      curr->size = curr->size - nbytes;
+
+
+      //prev = curr;
+      //curr = curr->next;
+
+      /*
       // fix references in freelist
-      prev->next = b;
+      if (curr->next != NULL) {
+        prev->next = curr;
+      }
+      */
     }
+    return allocated_list->addr;
 }
 
 
@@ -115,18 +130,17 @@ void mem_init(int size) {
     // null by default?
     freelist->next = NULL;
 
-    /*
+
     // initialize an empty allocated_list
     allocated_list = malloc(sizeof(struct block));
     // first free block will start at mem
-    allocated_list->addr = mem;
+    allocated_list->addr = NULL;
     // size 0 since empty
     // zero by default?
-    allocated_list->size = 0;
+    allocated_list->size = -1;
     // single-node linked-list, set next to NULL
     //null by default?
     allocated_list->next = NULL;
-    */
 }
 
 void mem_clean(){
