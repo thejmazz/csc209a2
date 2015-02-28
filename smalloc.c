@@ -7,7 +7,7 @@
 
 // Function headers
 void *createNode(struct block *curr, unsigned int nbytes);
-
+void mem_clean_help(struct block *head);
 
 /* The starting address of the memory region that is reserved by mem_init */
 void *mem;
@@ -108,7 +108,7 @@ int sfree(void *addr) {
 
   // Fix references in allocated_list
   prev->next = toFree->next;
-  
+
   // Move toFree node to front of freelist
   toFree->next = freelist;
   freelist = toFree;
@@ -160,5 +160,20 @@ void mem_init(int size) {
 }
 
 void mem_clean(){
+  mem_clean_help(allocated_list);
+  mem_clean_help(freelist);
+}
 
+void mem_clean_help(struct block *head) {
+  // set current block to head of linked list
+  struct block *curr = head;
+  // initialize a temp block pointer
+  struct block *temp;
+
+  // free all nodes in the linked list
+  while (curr != NULL) {
+    temp = curr;
+    free(curr);
+    curr = temp->next
+  }
 }
