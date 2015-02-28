@@ -14,7 +14,7 @@ extern struct block *freelist;
 void print_list(struct block *list) {
     struct block *cur = list;
     while(cur != NULL){
-        printf("    [addr: %p, size: %d]\n", cur->addr, cur->size );
+        printf("     [addr: %p, size: %d]\n", cur->addr, cur->size );
         printf("\n");
         cur = cur->next;
     }
