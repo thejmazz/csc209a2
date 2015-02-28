@@ -63,6 +63,7 @@ void *smalloc(unsigned int nbytes) {
     return allocated_list->addr;
 }
 
+
 void *createNode(struct block *curr, unsigned int nbytes) {
   if (allocated_list->size == -1) {
     // No memory has been smallocated before,
@@ -88,7 +89,31 @@ void *createNode(struct block *curr, unsigned int nbytes) {
 
 
 int sfree(void *addr) {
+  // set toFree node to head of allocated_list
+  struct block *toFree = allocated_list;
+  // initialize a previous block as well
+  struct block *prev = toFree;
+
+  // search allocated_list for a node
+  // with the correct address
+  while (toFree->addr != addr && toFree != NULL) {
+    prev = toFree;
+    toFree = toFree->next;
+  }
+
+  if (!toFree) {
+    // node with correct address was not found
     return -1;
+  }
+
+  // Fix references in allocated_list
+  prev->next = toFree->next;
+  
+  // Move toFree node to front of freelist
+  toFree->next = freelist;
+  freelist = toFree;
+
+  return 0;
 }
 
 
