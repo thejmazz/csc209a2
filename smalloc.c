@@ -65,6 +65,17 @@ void *smalloc(unsigned int nbytes) {
 
 
 void *createNode(struct block *curr, unsigned int nbytes) {
+  // Create a new node that will be appended
+  // to the front of allocated_list
+  struct block *temp = malloc(sizeof(struct block));
+
+  temp->addr = curr->addr;
+  temp->size = nbytes;
+  temp->next = allocated_list;
+
+  return temp;
+
+  /*
   if (allocated_list->size == -1) {
     // No memory has been smallocated before,
     // modify existing node in allocated_list
@@ -85,6 +96,7 @@ void *createNode(struct block *curr, unsigned int nbytes) {
 
     return temp;
   }
+  */
 }
 
 
@@ -113,6 +125,9 @@ int sfree(void *addr) {
     // prev and toFree are equivalent
     // i.e. edge case: freeing the first element
 
+    allocated_list = toFree->next;
+
+    /*
     if (toFree->next != NULL) {
       allocated_list = toFree->next;
     } else {
@@ -124,15 +139,46 @@ int sfree(void *addr) {
 
       // this causes a dreadful descent into infinity
       // enter with caution
-      /*allocated_list->addr = NULL;
-      allocated_list->size = -1;
-      allocated_list->next = NULL;*/
+      // allocated_list->addr = NULL;
+      // allocated_list->size = -1;
+      // allocated_list->next = NULL;
     }
+    */
+
   }
 
-  // Move toFree node to front of freelist
-  toFree->next = freelist;
-  freelist = toFree;
+
+
+  // Move toFree node to correct position within freelist
+  // Pointer for current position in freelist
+  struct block *curr = freelist;
+  // Use same prev pointer from above
+  prev = curr;
+  // Search for first node with smaller address
+  while(curr->addr < toFree->addr) {
+    prev = curr;
+    curr = curr->next;
+  }
+  toFree->next = curr;
+  //freelist = toFree;
+  if (!prev->next) {
+    // freelist is just one node,
+    // append toFree to head
+    freelist = toFree;
+  } else {
+    // modify internal references
+    prev->next = toFree;
+  }
+
+
+  //prev->next = toFree;
+  //toFree->next = curr;
+
+  //freelist = prev;
+
+
+  //toFree->next = freelist;
+  //freelist = toFree;
 
   return 0;
 }
