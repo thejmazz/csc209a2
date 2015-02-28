@@ -160,6 +160,7 @@ void mem_init(int size) {
 }
 
 void mem_clean(){
+  // call helper function on allocated_list and then freelist
   mem_clean_help(allocated_list);
   mem_clean_help(freelist);
 }
