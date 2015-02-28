@@ -22,7 +22,7 @@ struct block *freelist;
 struct block *allocated_list;
 
 
-void *smalloc(unsigned int nbytes) {
+void * smalloc(unsigned int nbytes) {
     // set current block to head of freelist
     struct block *curr = freelist;
     // initialize a previous block as well
@@ -35,7 +35,7 @@ void *smalloc(unsigned int nbytes) {
     }
 
     // exit if no block with enough space was found
-    // or trying to smalloc 0 bytes
+    // owhy are you udingr trying to smalloc 0 bytes
     if (curr == NULL || nbytes == 0) {
       return NULL;
     }
@@ -68,6 +68,15 @@ void *smalloc(unsigned int nbytes) {
       curr->size = curr->size - nbytes;
     }
     return allocated_list->addr;
+}
+
+void *tempNode(struct block *curr, unsigned int nbytes) {
+  struct block *temp = malloc(sizeof(struct block));
+  temp->addr = curr->addr;
+  temp->size = nbytes;
+  temp->next = allocated_list;
+
+  return temp;
 }
 
 
