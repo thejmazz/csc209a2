@@ -107,7 +107,28 @@ int sfree(void *addr) {
   }
 
   // Fix references in allocated_list
-  prev->next = toFree->next;
+  if (prev->next != toFree->next) {
+    prev->next = toFree->next;
+  } else {
+    // prev and toFree are equivalent
+    // i.e. edge case: freeing the first element
+
+    if (toFree->next != NULL) {
+      allocated_list = toFree->next;
+    } else {
+      // edge case: freeing the last element
+      // i.e. one node linked list
+      // i.e. allocated_list and toFree are the same
+      allocated_list->size = -1;
+
+
+      // this causes a dreadful descent into infinity
+      // enter with caution
+      /*allocated_list->addr = NULL;
+      allocated_list->size = -1;
+      allocated_list->next = NULL;*/
+    }
+  }
 
   // Move toFree node to front of freelist
   toFree->next = freelist;
