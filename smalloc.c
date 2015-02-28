@@ -172,8 +172,8 @@ void mem_clean_help(struct block *head) {
 
   // free all nodes in the linked list
   while (curr != NULL) {
-    temp = curr;
+    temp = curr->next;
     free(curr);
-    curr = temp->next;
+    curr = temp;
   }
 }
