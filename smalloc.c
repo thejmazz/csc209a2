@@ -25,39 +25,37 @@ struct block *freelist;
 struct block *allocated_list;
 
 
-void * smalloc(unsigned int nbytes) {
+void *smalloc(unsigned int nbytes) {
     // set current block to head of freelist
     struct block *curr = freelist;
     // initialize a previous block as well
     struct block *prev = curr;
 
-    // search freelist for a block with block.size >= nbytes
+    // search freelist for a node with node.size >= nbytes
     while (curr->size < nbytes) {
       prev = curr;
       curr = curr->next;
     }
 
     // exit if no block with enough space was found
-    // owhy are you udingr trying to smalloc 0 bytes
+    // or trying to smalloc 0 bytes
     if (curr == NULL || nbytes == 0) {
       return NULL;
     }
 
     if (curr->size == nbytes) {
-      // no need to split block from freelist
-
       // append temp to head of allocated_list
       allocated_list = createNode(curr, nbytes);
 
+      // no need to split block from freelist
       // fix references in freelist
       prev->next = curr->next;
 
     } else if (curr->size > nbytes) {
-      // split block from freelist
-
       // append temp to head of allocated_list
       allocated_list = createNode(curr, nbytes);
 
+      // split block from freelist
       // change address and size of current node in freelist
       curr->addr = curr->addr + nbytes;
       curr->size = curr->size - nbytes;
@@ -66,13 +64,26 @@ void * smalloc(unsigned int nbytes) {
 }
 
 void *createNode(struct block *curr, unsigned int nbytes) {
-  struct block *temp = malloc(sizeof(struct block));
+  if (allocated_list->size == -1) {
+    // No memory has been smallocated before,
+    // modify existing node in allocated_list
+    allocated_list->addr = curr->addr;
+    allocated_list->size = nbytes;
+    allocated_list->next = NULL;
 
-  temp->addr = curr->addr;
-  temp->size = nbytes;
-  temp->next = allocated_list;
+    return allocated_list;
 
-  return temp;
+  } else {
+    // Create a new node that will be appended
+    // to the front of allocated_list
+    struct block *temp = malloc(sizeof(struct block));
+
+    temp->addr = curr->addr;
+    temp->size = nbytes;
+    temp->next = allocated_list;
+
+    return temp;
+  }
 }
 
 
@@ -113,19 +124,13 @@ void mem_init(int size) {
     // size as given by param size
     freelist->size = size;
     // single-node linked-list, set next to NULL
-    // null by default?
     freelist->next = NULL;
 
 
     // initialize an empty allocated_list
     allocated_list = malloc(sizeof(struct block));
-    // first free block will start at mem
     allocated_list->addr = NULL;
-    // size 0 since empty
-    // zero by default?
     allocated_list->size = -1;
-    // single-node linked-list, set next to NULL
-    //null by default?
     allocated_list->next = NULL;
 }
 
