@@ -5,6 +5,9 @@
 #include <sys/mman.h>
 #include "smalloc.h"
 
+// Function headers
+void *createNode(struct block *curr, unsigned int nbytes);
+
 
 /* The starting address of the memory region that is reserved by mem_init */
 void *mem;
@@ -40,28 +43,20 @@ void * smalloc(unsigned int nbytes) {
       return NULL;
     }
 
-    // initialize temp block
-    struct block *temp = malloc(sizeof(struct block));
-
     if (curr->size == nbytes) {
       // no need to split block from freelist
-      temp->addr = curr;
-      temp->size = nbytes;
-      temp->next = allocated_list;
 
       // append temp to head of allocated_list
-      allocated_list = temp;
+      allocated_list = createNode(curr, nbytes);
 
       // fix references in freelist
       prev->next = curr->next;
+
     } else if (curr->size > nbytes) {
       // split block from freelist
-      temp->addr = curr->addr;
-      temp->size = nbytes;
-      temp->next = allocated_list;
 
       // append temp to head of allocated_list
-      allocated_list = temp;
+      allocated_list = createNode(curr, nbytes);
 
       // change address and size of current node in freelist
       curr->addr = curr->addr + nbytes;
@@ -70,8 +65,9 @@ void * smalloc(unsigned int nbytes) {
     return allocated_list->addr;
 }
 
-void *tempNode(struct block *curr, unsigned int nbytes) {
+void *createNode(struct block *curr, unsigned int nbytes) {
   struct block *temp = malloc(sizeof(struct block));
+
   temp->addr = curr->addr;
   temp->size = nbytes;
   temp->next = allocated_list;
