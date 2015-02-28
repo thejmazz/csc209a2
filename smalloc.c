@@ -174,6 +174,6 @@ void mem_clean_help(struct block *head) {
   while (curr != NULL) {
     temp = curr;
     free(curr);
-    curr = temp->next
+    curr = temp->next;
   }
 }
