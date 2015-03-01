@@ -56,16 +56,21 @@ void *smalloc(unsigned int nbytes) {
         } else {
           // freelist has one node, is of size nbytes
           // smallocating this would mean no memory will be available
-          freelist->size = 0;
+          //freelist->size = 0;
         }
       }
-
 
       // append curr to head of allocated_list
       //allocated_list = createNode(curr, nbytes);
       //struct block *head_allocated_list = allocated_list;
       curr->next = allocated_list;
       allocated_list = curr;
+
+      // freelist has one node, is of size nbytes
+      // smallocating this would mean no memory will be available
+      if (allocated_list == freelist) {
+        freelist = NULL;
+      }
 
       //int i = 5;
 
@@ -174,30 +179,42 @@ int sfree(void *addr) {
   // Use same prev pointer from above
   prev = curr;
   // Search for first node with smaller address
-  while(curr->addr < toFree->addr) {
-    prev = curr;
-    curr = curr->next;
-  }
-  toFree->next = curr;
-  //freelist = toFree;
-  if (!prev->next) {
-    // freelist is just one node,
-    // append toFree to head
-    if (freelist->size == 0) {
-      freelist->addr = toFree->addr;
-      freelist->size = toFree->size;
+  if (curr) {
+    while(curr->addr < toFree->addr) {
+      prev = curr;
+      curr = curr->next;
+    }
+    toFree->next = curr;
+    //freelist = toFree;
+    if (!prev->next) {
+      // freelist is just one node,
+      // append toFree to head
+      if (freelist->size == 0) {
+        freelist->addr = toFree->addr;
+        freelist->size = toFree->size;
+      } else {
+        freelist = toFree;
+      }
     } else {
-      freelist = toFree;
+      // if toFree->next and prev are the same,
+      // we are appending to the head of freelist
+      if (toFree->next == prev) {
+        freelist = toFree;
+      } else {
+        // modify internal references
+        prev->next = toFree;
+      }
     }
   } else {
-    // if toFree->next and prev are the same,
-    // we are appending to the head of freelist
-    if (toFree->next == prev) {
-      freelist = toFree;
-    } else {
-      // modify internal references
-      prev->next = toFree;
-    }
+    toFree->next = NULL;
+    freelist = toFree;
+    /*struct block *freshFreelist = malloc(sizeof(struct block));
+    freshFreelist->addr = mem;
+    freshFreelist->size = toFree->size;
+    freshFreelist->next = NULL;
+
+    freelist = freshFreelist;
+    */
   }
 
   //prev->next = toFree;

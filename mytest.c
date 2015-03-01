@@ -24,6 +24,26 @@ int main(void) {
 
     char *ptrs[3];
 
+    ptrs[0] = smalloc(SIZE);
+    printf("==== smallocating %d bytes to ptrs[0], ====\n", SIZE);
+    printAll();
+
+
+    sfree(ptrs[0]);
+    printf("==== sfreeing ptrs[0], ====\n");
+    printAll();
+
+
+    ptrs[0] = smalloc(128);
+    printf("==== smallocating 128 bytes to ptrs[0], ====\n");
+    printAll();
+
+
+    sfree(ptrs[0]);
+    printf("==== sfreeing ptrs[0], ====\n");
+    printAll();
+
+
     printf("// set up pointers\n");
     ptrs[0] = smalloc(20);
     ptrs[1] = smalloc(NBYTES);
