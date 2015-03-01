@@ -86,29 +86,6 @@ void *createNode(struct block *curr, unsigned int nbytes) {
   temp->next = allocated_list;
 
   return temp;
-
-  /*
-  if (allocated_list->size == -1) {
-    // No memory has been smallocated before,
-    // modify existing node in allocated_list
-    allocated_list->addr = curr->addr;
-    allocated_list->size = nbytes;
-    allocated_list->next = NULL;
-
-    return allocated_list;
-
-  } else {
-    // Create a new node that will be appended
-    // to the front of allocated_list
-    struct block *temp = malloc(sizeof(struct block));
-
-    temp->addr = curr->addr;
-    temp->size = nbytes;
-    temp->next = allocated_list;
-
-    return temp;
-  }
-  */
 }
 
 
@@ -137,25 +114,6 @@ int sfree(void *addr) {
     // prev and toFree are equivalent
     // i.e. edge case: freeing the first element
     allocated_list = toFree->next;
-
-    /*
-    if (toFree->next != NULL) {
-      allocated_list = toFree->next;
-    } else {
-      // edge case: freeing the last element
-      // i.e. one node linked list
-      // i.e. allocated_list and toFree are the same
-      allocated_list->size = -1;
-
-
-      // this causes a dreadful descent into infinity
-      // enter with caution
-      // allocated_list->addr = NULL;
-      // allocated_list->size = -1;
-      // allocated_list->next = NULL;
-    }
-    */
-
   }
 
 
@@ -196,15 +154,6 @@ int sfree(void *addr) {
     toFree->next = NULL;
     freelist = toFree;
   }
-
-  //prev->next = toFree;
-  //toFree->next = curr;
-
-  //freelist = prev;
-
-
-  //toFree->next = freelist;
-  //freelist = toFree;
 
   return 0;
 }
@@ -247,12 +196,6 @@ void mem_init(int size) {
 
     // initialize an empty allocated_list
     allocated_list = NULL;
-    /*
-    allocated_list = malloc(sizeof(struct block));
-    allocated_list->addr = NULL;
-    allocated_list->size = -1;
-    allocated_list->next = NULL;
-    */
 }
 
 void mem_clean(){
