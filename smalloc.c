@@ -48,21 +48,13 @@ void *smalloc(unsigned int nbytes) {
       // fix references in freelist
       if (prev->addr != curr->addr) {
         prev->next = curr->next;
-      } else {
+      } else if (curr->next != NULL) {
         // prev and curr equal
         // i.e. found block with correct size at first node
-        if (curr->next != NULL) {
-          freelist = curr->next;
-        } else {
-          // freelist has one node, is of size nbytes
-          // smallocating this would mean no memory will be available
-          //freelist->size = 0;
-        }
+        freelist = curr->next;
       }
 
       // append curr to head of allocated_list
-      //allocated_list = createNode(curr, nbytes);
-      //struct block *head_allocated_list = allocated_list;
       curr->next = allocated_list;
       allocated_list = curr;
 
@@ -71,13 +63,8 @@ void *smalloc(unsigned int nbytes) {
       if (allocated_list == freelist) {
         freelist = NULL;
       }
-
-      //int i = 5;
-
-
-
     } else if (curr->size > nbytes) {
-      // append temp to head of allocated_list
+      // append new node to head of allocated_list
       allocated_list = createNode(curr, nbytes);
 
       // split block from freelist
@@ -259,10 +246,13 @@ void mem_init(int size) {
 
 
     // initialize an empty allocated_list
+    allocated_list = NULL;
+    /*
     allocated_list = malloc(sizeof(struct block));
     allocated_list->addr = NULL;
     allocated_list->size = -1;
     allocated_list->next = NULL;
+    */
 }
 
 void mem_clean(){

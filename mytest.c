@@ -14,7 +14,20 @@ void printAll();
 
 
 /*
- * test description
+ * This is my testing program, it tests for several things:
+ * - smallocating the entire size of freelist. this is interesting because
+ *    this case rarely occurs, and requires a specific if statement to catch it.
+ *    further, special care must be taken when smallocating the entire freelist
+ *    as then the freelist becomes null.
+ * - freeing all space
+ * - freeing an internal node
+ * - smallocating a differently size node back in its place
+ * - freeing it again to test proper order (increasing mem. addr.) of freelist
+ * - smallocating a node of size exactly of the size of a node in freelist
+ * - attempting to sfree at a bad address
+ * - freeing the last node when size > 1
+ * - freeing the first node when size > 1
+ * - freeing a single remaining node
  */
 
 int main(void) {
@@ -32,17 +45,7 @@ int main(void) {
     sfree(ptrs[0]);
     printf("================== sfreeing ptrs[0], ==================\n");
     printAll();
-
-
-    ptrs[0] = smalloc(128);
-    printf("========== smallocating 128 bytes to ptrs[0], =========\n");
-    printAll();
-
-
-    sfree(ptrs[0]);
-    printf("================== sfreeing ptrs[0], ==================\n");
-    printAll();
-
+    printf("\n");
 
     printf("// set up pointers\n");
     ptrs[0] = smalloc(20);
@@ -69,24 +72,18 @@ int main(void) {
     printf("================== sfreeing ptrs[1], ==================\n");
     printAll();
 
-    // memory leak here
     printf("// smalloc back an equally sized node of NBYTES\n");
+    printf("// will not split any nodes in freelist\n");
     ptrs[1] = smalloc(NBYTES);
     printf("========== smallocating %d bytes to ptrs[1], ==========\n", NBYTES);
     printAll();
 
-
-    printf("// free it again\n");
-    sfree(ptrs[1]);
-    printf("================== sfreeing ptrs[1], ==================\n");
-    printAll();
-
     printf("// attempt to free at an incorrect address\n");
     int i = sfree(ptrs[1]+1);
-    printf("======= sfreeing at bad address %p, =======\n", ptrs[1]+1);
     // i = -1;
+    printf("======= sfreeing at bad address %p, =======\n", ptrs[1]+1);
     printf("================== sfree returned %d ==================\n", i);
-    printAll();
+    printf("\n");
 
     printf("// sfree last node in allocated_list, size > 1\n");
     sfree(ptrs[0]);
