@@ -44,9 +44,6 @@ void *smalloc(unsigned int nbytes) {
     }
 
     if (curr->size == nbytes) {
-      // append temp to head of allocated_list
-      allocated_list = createNode(curr, nbytes);
-
       // no need to split block from freelist
       // fix references in freelist
       if (prev->addr != curr->addr) {
@@ -62,6 +59,17 @@ void *smalloc(unsigned int nbytes) {
           freelist->size = 0;
         }
       }
+
+
+      // append curr to head of allocated_list
+      //allocated_list = createNode(curr, nbytes);
+      //struct block *head_allocated_list = allocated_list;
+      curr->next = allocated_list;
+      allocated_list = curr;
+
+      //int i = 5;
+
+
 
     } else if (curr->size > nbytes) {
       // append temp to head of allocated_list
@@ -175,7 +183,6 @@ int sfree(void *addr) {
   if (!prev->next) {
     // freelist is just one node,
     // append toFree to head
-
     if (freelist->size == 0) {
       freelist->addr = toFree->addr;
       freelist->size = toFree->size;
@@ -183,10 +190,15 @@ int sfree(void *addr) {
       freelist = toFree;
     }
   } else {
-    // modify internal references
-    prev->next = toFree;
+    // if toFree->next and prev are the same,
+    // we are appending to the head of freelist
+    if (toFree->next == prev) {
+      freelist = toFree;
+    } else {
+      // modify internal references
+      prev->next = toFree;
+    }
   }
-
 
   //prev->next = toFree;
   //toFree->next = curr;
