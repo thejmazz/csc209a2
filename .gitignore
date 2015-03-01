@@ -1,4 +1,5 @@
 *.o
 simpletest
 mytest
+myothertest
 *.swp

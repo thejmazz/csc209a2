@@ -32,7 +32,7 @@ void *smalloc(unsigned int nbytes) {
     struct block *prev = curr;
 
     // search freelist for a node with node.size >= nbytes
-    while (curr->size < nbytes) {
+    while (curr != NULL && curr->size < nbytes) {
       prev = curr;
       curr = curr->next;
     }
@@ -49,7 +49,19 @@ void *smalloc(unsigned int nbytes) {
 
       // no need to split block from freelist
       // fix references in freelist
-      prev->next = curr->next;
+      if (prev->addr != curr->addr) {
+        prev->next = curr->next;
+      } else {
+        // prev and curr equal
+        // i.e. found block with correct size at first node
+        if (curr->next != NULL) {
+          freelist = curr->next;
+        } else {
+          // freelist has one node, is of size nbytes
+          // smallocating this would mean no memory will be available
+          freelist->size = 0;
+        }
+      }
 
     } else if (curr->size > nbytes) {
       // append temp to head of allocated_list
@@ -108,7 +120,7 @@ int sfree(void *addr) {
 
   // search allocated_list for a node
   // with the correct address
-  while (toFree->addr != addr && toFree != NULL) {
+  while (toFree != NULL && toFree->addr != addr) {
     prev = toFree;
     toFree = toFree->next;
   }
@@ -124,7 +136,6 @@ int sfree(void *addr) {
   } else {
     // prev and toFree are equivalent
     // i.e. edge case: freeing the first element
-
     allocated_list = toFree->next;
 
     /*
@@ -164,7 +175,13 @@ int sfree(void *addr) {
   if (!prev->next) {
     // freelist is just one node,
     // append toFree to head
-    freelist = toFree;
+
+    if (freelist->size == 0) {
+      freelist->addr = toFree->addr;
+      freelist->size = toFree->size;
+    } else {
+      freelist = toFree;
+    }
   } else {
     // modify internal references
     prev->next = toFree;
