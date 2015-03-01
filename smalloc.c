@@ -208,13 +208,6 @@ int sfree(void *addr) {
   } else {
     toFree->next = NULL;
     freelist = toFree;
-    /*struct block *freshFreelist = malloc(sizeof(struct block));
-    freshFreelist->addr = mem;
-    freshFreelist->size = toFree->size;
-    freshFreelist->next = NULL;
-
-    freelist = freshFreelist;
-    */
   }
 
   //prev->next = toFree;
